@@ -1,4 +1,3 @@
-<description><![CDATA[
 <p><strong>SVGEazy</strong> is a lightweight and powerful IntelliJ plugin that makes viewing, interacting with, and optimizing SVG files effortless.</p>
 
 <p>Perfect for developers and designers working with SVG icons and assets.</p>
@@ -14,4 +13,3 @@
 <p>Whether you're cleaning up icons, optimizing web assets, or simply needing a better way to view and tweak SVGs, SVGEazy saves you time and effort.</p>
 
 <p>SVGEazy — Preview instantly, interact naturally, optimize powerfully.</p>
-]]></description>
