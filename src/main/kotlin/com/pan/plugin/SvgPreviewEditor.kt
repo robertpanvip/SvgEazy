@@ -12,5 +12,5 @@ class SvgPreviewEditor(
 ) : TextEditorWithPreview(
     TextEditorProvider.getInstance().createEditor(project, file) as TextEditor,
     SvgPreviewPanel(project, file),
-    "SVG Easy"
+    "SvgEasy"
 )

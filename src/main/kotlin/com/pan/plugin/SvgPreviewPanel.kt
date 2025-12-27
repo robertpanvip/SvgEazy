@@ -11,6 +11,7 @@ import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.fileEditor.FileEditorLocation
 import com.intellij.openapi.fileEditor.FileEditorState
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.UserDataHolderBase
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.JBColor
@@ -21,11 +22,13 @@ import com.intellij.ui.jcef.JBCefJSQuery
 import com.intellij.util.ui.UIUtil
 import org.cef.browser.CefBrowser
 import org.cef.browser.CefFrame
+import org.cef.callback.CefJSDialogCallback
+import org.cef.handler.CefJSDialogHandler
+import org.cef.handler.CefJSDialogHandlerAdapter
 import org.jetbrains.annotations.NotNull
-import java.awt.BorderLayout
 import javax.swing.JComponent
-import javax.swing.JPanel
 import org.cef.handler.CefLoadHandlerAdapter
+import org.cef.misc.BoolRef
 import kotlin.math.log10
 import kotlin.math.pow
 
@@ -79,7 +82,7 @@ class SvgPreviewPanel(
             .replace(".0 ", " ")  // 去掉 .0
     }
 
-    fun getSizeInfo() :JBCefJSQuery.Response {
+    fun getSizeInfo(): JBCefJSQuery.Response {
         return try {
             // 1. 获取文件大小（人类可读格式）
             val fileSizeBytes = file.length
@@ -99,16 +102,12 @@ class SvgPreviewPanel(
             // 获取当前编辑器背景色（最准确，跟代码区完全一致）
             val bgColor = UIUtil.getPanelBackground()  // 返回当前主题的面板背景色
             val textColor = UIUtil.getLabelForeground()  // 文字前景色
-            val f =  UIUtil.getFocusedBoundsColor()
+            val f = UIUtil.getFocusedBoundsColor()
             val a = JBColor.namedColor(
                 "Button.foreground.pressed",
                 // 兜底：如果主题没定义 pressed，就用普通前景色
                 JBColor.namedColor("Button.foreground", JBColor.WHITE)
             );
-            /*print("b--rgb(${bgColor.red}, ${bgColor.green}, ${bgColor.blue})")
-            print("t--rgb(${textColor.red}, ${textColor.green}, ${textColor.blue})")
-            print("f--rgb(${f.red}, ${f.green}, ${f.blue})")
-            print("a--rgb(${a.red}, ${a.green}, ${a.blue})")*/
             // 方式：最常用（成功回调打印结果，失败回调打印错误）
             val js = """
                     // 设置 CSS 变量
@@ -138,6 +137,40 @@ class SvgPreviewPanel(
         """.trimIndent()
             browser.cefBrowser.executeJavaScript(js, browser.cefBrowser.url, 0)
         }
+    }
+
+    fun addJSHandler() {
+        browser.jbCefClient.addJSDialogHandler(
+            object : CefJSDialogHandlerAdapter() {
+
+                override fun onJSDialog(
+                    browser: CefBrowser?,
+                    originUrl: String?,
+                    dialogType: CefJSDialogHandler.JSDialogType?,
+                    messageText: String?,
+                    defaultPromptText: String?,
+                    callback: CefJSDialogCallback?,
+                    suppressMessage: BoolRef?
+                ): Boolean {
+
+                    if (dialogType == CefJSDialogHandler.JSDialogType.JSDIALOGTYPE_ALERT) {
+                        ApplicationManager.getApplication().invokeLater {
+                            Messages.showInfoMessage(
+                                project,
+                                messageText ?: "",
+                                "SVG Preview"
+                            )
+                            callback?.Continue(true, null)
+                        }
+                        return true
+                    }
+
+                    return false
+                }
+            },
+            browser.cefBrowser
+        )
+        browser.jbCefClient.addDisplayHandler( DisplayHandler(browser.component), browser.cefBrowser)
     }
 
     fun initJSBridge() {
@@ -177,7 +210,7 @@ class SvgPreviewPanel(
         jsInfoQuery.addHandler { input ->
             return@addHandler getSizeInfo()
         }
-
+        addJSHandler();
 // 在页面加载完成后注入桥接函数（推荐方式）
         browser.jbCefClient.addLoadHandler(object : CefLoadHandlerAdapter() {
             override fun onLoadEnd(browser: CefBrowser?, frame: CefFrame?, httpStatusCode: Int) {
