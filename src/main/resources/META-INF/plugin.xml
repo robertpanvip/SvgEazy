@@ -1,0 +1,41 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+    <id>com.pan.SvgEasy</id>
+
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
+    <name>SvgEasy</name>
+
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor url="https://www.yourcompany.com">YourCompany</vendor>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
+    <description><![CDATA[
+<p><strong>SVGEazy</strong> is an IntelliJ Platform plugin designed specifically for SVG files, delivering an intuitive and real-time code editing + visual preview experience.</p>
+
+<p>Key Features:</p>
+<ul>
+  <li><strong>Side-by-Side Real-Time Preview</strong>: Left side uses the native IntelliJ editor with full XML/SVG syntax highlighting, code folding, and completion; right side provides high-fidelity real-time rendering powered by JCEF — what you edit is what you see.</li>
+  <li><strong>Flexible Layout Switching</strong>: Quickly toggle between “Split View”, “Preview Only”, and “Editor Only” modes via right-click context menu to suit different workflows.</li>
+  <li><strong>Seamless Theme Sync</strong>: Preview background perfectly matches the current IDEA theme (Light, Darcula, etc.), with optional subtle transparency for a more natural and comfortable look.</li>
+  <li><strong>File Info at a Glance</strong>: Displays SVG dimensions (e.g., 256×156) and file size (e.g., 818 B) directly in the preview area for quick reference.</li>
+  <li><strong>Native Experience</strong>: All interactions use standard IntelliJ Platform components — consistent style, no flickering, smooth performance.</li>
+</ul>
+
+<p>Whether you're an icon designer, front-end developer, or anyone who frequently works with SVG files, SVGEazy significantly boosts your productivity and visual feedback.</p>
+]]></description>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+
+
+    <!-- Extension points defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <!-- 仅注册预览编辑器，不修改 FileType，不覆盖编辑功能 -->
+    <extensions defaultExtensionNs="com.intellij">
+        <fileEditorProvider implementation="com.pan.plugin.SvgPreviewEditorProvider"/>
+    </extensions>
+</idea-plugin>

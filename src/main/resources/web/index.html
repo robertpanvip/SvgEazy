@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="" xmlns="" xmlns="">
+<head>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" href="./style.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title></title>
+</head>
+<body>
+<div class="toolbar">
+    <span class="size-info"></span>
+   <div class="svgo-btn-group">
+       <button class="svgo-btn svgo-middle">
+           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+               <path d="M2.5 3C2.22386 3 2 3.22386 2 3.5C2 3.77614 2.22386 4 2.5 4H13.5C13.7761 4 14 3.77614 14 3.5C14 3.22386 13.7761 3 13.5 3H2.5Z"/>
+               <path d="M4.5 6C4.22386 6 4 6.22386 4 6.5C4 6.77614 4.22386 7 4.5 7H11.5C11.7761 7 12 6.77614 12 6.5C12 6.22386 11.7761 6 11.5 6H4.5Z"/>
+               <path d="M4.5 12C4.22386 12 4 12.2239 4 12.5C4 12.7761 4.22386 13 4.5 13H11.5C11.7761 13 12 12.7761 12 12.5C12 12.2239 11.7761 12 11.5 12H4.5Z"/>
+               <path d="M2 9.5C2 9.22386 2.22386 9 2.5 9H13.5C13.7761 9 14 9.22386 14 9.5C14 9.77614 13.7761 10 13.5 10H2.5C2.22386 10 2 9.77614 2 9.5Z"/>
+           </svg>
+       </button>
+       <button class="svgo-btn svgo-chess active">
+           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+               <rect x="2.5" y="2.5" width="3" height="3"/>
+               <rect x="2.5" y="10.5" width="3" height="3"/>
+               <rect x="6.5" y="6.5" width="3" height="3"/>
+               <rect x="10.5" y="2.5" width="3" height="3"/>
+               <rect x="10.5" y="10.5" width="3" height="3"/>
+           </svg>
+       </button>
+       <button class="svgo-btn svgo-grid">
+           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+               <rect x="11" y="2" width="1" height="12" rx="0.5"/>
+               <rect x="14" y="11" width="1" height="12" rx="0.5" transform="rotate(90 14 11)"/>
+               <rect x="4" y="2" width="1" height="12" rx="0.5"/>
+               <rect x="14" y="4" width="1" height="12" rx="0.5" transform="rotate(90 14 4)"/>
+           </svg>
+       </button>
+       <button class="svgo-start">
+           <span class="prettify">Optimize</span>
+           <span class="prettified">
+               <svg width="14" height="12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                   <path d="M13 2.118 5 10 1 6.118" stroke="#6E7687" stroke-width="2"></path>
+               </svg>
+            <span>Optimized</span>
+         </span>
+       </button>
+       <button class="svgo-btn svgo-setting">
+           <svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <g stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                  clip-path="url(#options_svg__a)">
+                   <path d="M3.29 9.91a1.05 1.05 0 0 1-.21 1.157l-.037.038a1.272 1.272 0 1 0 1.8 1.801l.039-.038a1.05 1.05 0 0 1 1.158-.21 1.05 1.05 0 0 1 .636.961v.108a1.273 1.273 0 0 0 2.546 0v-.057a1.05 1.05 0 0 1 .687-.96 1.05 1.05 0 0 1 1.158.21l.038.037a1.272 1.272 0 0 0 2.175-.9 1.272 1.272 0 0 0-.374-.9l-.038-.039a1.05 1.05 0 0 1-.21-1.158 1.05 1.05 0 0 1 .961-.636h.108a1.273 1.273 0 0 0 0-2.546h-.057a1.05 1.05 0 0 1-.96-.687 1.05 1.05 0 0 1 .21-1.158l.037-.038a1.272 1.272 0 1 0-1.8-1.801l-.039.038a1.05 1.05 0 0 1-1.158.21h-.05a1.05 1.05 0 0 1-.637-.961v-.108a1.273 1.273 0 0 0-2.546 0v.057a1.05 1.05 0 0 1-.636.96 1.05 1.05 0 0 1-1.158-.21l-.038-.037a1.273 1.273 0 1 0-1.801 1.8l.038.039a1.05 1.05 0 0 1 .21 1.158v.05a1.05 1.05 0 0 1-.961.637h-.108a1.273 1.273 0 0 0 0 2.546h.057a1.05 1.05 0 0 1 .96.636Z"></path>
+                   <path d="M8 10a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z"></path>
+               </g>
+               <defs>
+                   <clipPath id="options_svg__a">
+                       <path fill="currentColor" d="M0 0h16v16H0z"></path>
+                   </clipPath>
+               </defs>
+           </svg>
+       </button>
+       <span class="svgo-list-anchor">
+       <form class="svgo-list">
+        </form>
+    </span>
+   </div>
+
+</div>
+
+<div class="container">
+    <div class="viewer chess">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+             class="iconify iconify--logos" width="31.88" height="32" preserveAspectRatio="xMidYMid meet"
+             viewBox="0 0 256 257">
+            <style>
+                .a{ stroke: red}
+            </style>
+            <defs>
+                <linearGradient id="IconifyId1813088fe1fbc01fb466" x1="-.828%" x2="57.636%" y1="7.652%" y2="78.411%">
+                    <stop offset="0%" stop-color="#41D1FF"></stop>
+                    <stop offset="100%" stop-color="#BD34FE"></stop>
+                </linearGradient>
+                <linearGradient id="IconifyId1813088fe1fbc01fb467" x1="43.376%" x2="50.316%" y1="2.242%" y2="89.03%">
+                    <stop offset="0%" stop-color="#FFEA83"></stop>
+                    <stop offset="8.333%" stop-color="#FFDD35"></stop>
+                    <stop offset="100%" stop-color="#FFA800"></stop>
+                </linearGradient>
+            </defs>
+            <path class="a" fill="url(#IconifyId1813088fe1fbc01fb466)"
+                  d="M255.153 37.938L134.897 252.976c-2.483 4.44-8.862 4.466-11.382.048L.875 37.958c-2.746-4.814 1.371-10.646 6.827-9.67l120.385 21.517a6.537 6.537 0 0 0 2.322-.004l117.867-21.483c5.438-.991 9.574 4.796 6.877 9.62Z"></path>
+            <path fill="url(#IconifyId1813088fe1fbc01fb467)"
+                  d="M185.432.063L96.44 17.501a3.268 3.268 0 0 0-2.634 3.014l-5.474 92.456a3.268 3.268 0 0 0 3.997 3.378l24.777-5.718c2.318-.535 4.413 1.507 3.936 3.838l-7.361 36.047c-.495 2.426 1.782 4.5 4.151 3.78l15.304-4.649c2.372-.72 4.652 1.36 4.15 3.788l-11.698 56.621c-.732 3.542 3.979 5.473 5.943 2.437l1.313-2.028l72.516-144.72c1.215-2.423-.88-5.186-3.54-4.672l-25.505 4.922c-2.396.462-4.435-1.77-3.759-4.114l16.646-57.705c.677-2.35-1.37-4.583-3.769-4.113Z"></path>
+        </svg>
+    </div>
+</div>
+<script src="./svgo.browser.js"></script>
+<script src="./main.js"></script>
+</body>
+</html>
