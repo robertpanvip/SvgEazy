@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
     <!-- 深色圆背景，确保鲜艳元素突出 -->
-    <circle cx="20" cy="20" r="19" fill="url(#paint0_linear)" stroke="#333333" />
+    <circle cx="20" cy="20" r="19" fill="url(#paint0_linear)" />
 
     <!-- 高饱和度鲜艳渐变定义 -->
     <defs>
@@ -23,7 +23,7 @@
     </defs>
 
     <!-- 放大后的显示器主体（更大、更抢眼） -->
-    <rect x="5" y="7" width="30" height="22" rx="4" fill="url(#bodyGrad)" stroke="#00FFFF" stroke-width="2"/>
+    <rect x="5" y="7" width="30" height="22" rx="4" fill="url(#bodyGrad)" stroke="#00FFFF" stroke-width="1"/>
 
     <!-- 屏幕（深色，突出内容） -->
     <rect x="7" y="9" width="26" height="18" rx="2" fill="#3C99CC"/>
@@ -39,6 +39,6 @@
     <circle cx="27.8" cy="17.2" r="1.5" fill="#FFFFFF"/>
 
     <!-- 底座（灰色，增加立体感） -->
-    <rect x="14" y="29" width="12" height="3" rx="1.5" fill="#555555"/>
-    <rect x="12" y="32" width="16" height="2" rx="1" fill="#444444"/>
+    <rect x="14" y="29" width="12" height="3" rx="1.5" fill="#39FF14"/>
+    <rect x="12" y="32" width="16" height="2" rx="1" fill="#39FF14"/>
 </svg>
