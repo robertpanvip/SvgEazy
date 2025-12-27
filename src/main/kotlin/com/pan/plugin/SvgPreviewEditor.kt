@@ -40,6 +40,7 @@ import javax.swing.JComponent
 import javax.swing.JPanel
 import org.cef.handler.CefLoadHandlerAdapter
 import javax.swing.BorderFactory
+import javax.swing.UIManager
 import kotlin.math.log10
 import kotlin.math.pow
 
@@ -302,10 +303,12 @@ class SvgPreviewEditor(
 
         // 初始应用 Split 模式
         applyMode(SplitMode.SPLIT)
-// 给左侧代码编辑器加边框（右边框突出分隔）
+
+        val separatorColor = UIUtil.getTooltipSeparatorColor()
+        // 给左侧代码编辑器加边框（右边框突出分隔）
         codeEditor.component.border = BorderFactory.createCompoundBorder(
             JBUI.Borders.emptyRight(0),
-            BorderFactory.createMatteBorder(0, 0, 0, 1, JBUI.CurrentTheme.Separator.color())
+            BorderFactory.createMatteBorder(0, 0, 0, 1, separatorColor)
         )
     // 给右侧预览加边框（左边框对应）
         browser.component.border = JBUI.Borders.empty(8)
