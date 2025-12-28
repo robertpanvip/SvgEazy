@@ -1,6 +1,6 @@
 const $ = document.querySelector.bind(document);
 let cleanup = [];
-const options = [
+let options = [
     {
         key: "cleanupAttrs",
         label: "Clean up attributes",
@@ -137,7 +137,7 @@ const options = [
 function updateSvgContent(svg) {
     const viewer = $('.viewer');
     viewer.innerHTML = svg;
-    const v = optimizeSvg(svg);
+    const v = optimizeSvg(svg, options);
     const template = document.createElement('template')
     template.innerHTML = v;
     if (template.innerHTML !== viewer.innerHTML) {
@@ -165,7 +165,19 @@ function getSvgInfo() {
     })
 }
 
-function optimizeSvg(svgString) {
+function openSetting(param) {
+    return new Promise((resolve, reject) => {
+        window.JBCefSetting?.(param, resolve, reject);
+    })
+}
+
+function syncOptions(jsonStr) {
+    options = JSON.parse(jsonStr);
+    const viewer = $('.viewer');
+    optimizeSvg(viewer.innerHTML, options)
+}
+
+function optimizeSvg(svgString, options) {
     const viewer = $('.viewer');
     const settingForm = $('.svgo-list');
     const f = new FormData(settingForm);
@@ -227,21 +239,34 @@ function bootstrap() {
         sizeInfo.innerHTML = `${size}  ${res}`
     })
 
-
-    const gridLikeClick = function (token) {
-        return function () {
-            viewer.classList.toggle(token)
-            this.classList.toggle('active');
+    const handleChessClick = function () {
+        viewer.classList.toggle("chess")
+        this.classList.toggle('active');
+        if (this.classList.contains('active')) {
+            this.title = 'cancel chess board'
+        } else {
+            this.title = 'show chess board'
         }
-    }
-    const handleChessClick = gridLikeClick('chess');
-    const handleGridClick = gridLikeClick('grid')
+    };
+
+    const handleGridClick = function () {
+        viewer.classList.toggle("grid");
+        this.classList.toggle('active');
+        if (this.classList.contains('active')) {
+            this.title = 'cancel grid board'
+        } else {
+            this.title = 'show grid board'
+        }
+    };
 
     function handleCenterClick() {
         this.classList.toggle('active');
         if (this.classList.contains('active')) {
+            this.title = 'cancel fit content'
             fitContentToViewBox(svg);
             syncSvg(viewer.innerHTML);
+        } else {
+            this.title = 'fit content'
         }
     }
 
@@ -249,8 +274,11 @@ function bootstrap() {
     function handleSvgoStartClick() {
         this.classList.toggle('active');
         if (this.classList.contains('active')) {
-            const data = optimizeSvg(viewer.innerHTML)
+            const data = optimizeSvg(viewer.innerHTML, options)
             syncSvg(data);
+            this.title = 'Optimize'
+        } else {
+            this.title = 'Optimize'
         }
     }
 
@@ -307,14 +335,21 @@ function initSettingPanel() {
     //setting.addEventListener('click', togglePanel);
 
     const settingClick = (e) => {
-        toggleSetting(e);
+        const _options = options.map((op) => ({...op, checked: op.checked === undefined ? true : op.checked}))
+        openSetting(JSON.stringify(_options)).then(res => {
+            console.log(res)
+        }, (err) => {
+            console.log(err)
+        });
+
+        /*toggleSetting(e);
         // 如果面板现在是打开状态，才添加外部点击关闭监听
         if (setting.classList.contains('active')) {
             // 使用 setTimeout 0 或 nextTick 确保点击按钮本身的事件已冒泡完毕
             setTimeout(() => {
                 window.addEventListener('click', closePanelIfClickOutside, {once: true});
             }, 0);
-        }
+        }*/
     }
 
     setting.addEventListener('click', settingClick);

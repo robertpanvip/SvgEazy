@@ -1,5 +1,9 @@
 package com.pan.plugin
 
+import SvgOption
+import SvgSettingsDialog
+import com.google.common.reflect.TypeToken
+import com.google.gson.Gson
 import com.intellij.ide.ui.LafManagerListener
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
@@ -21,14 +25,13 @@ import com.intellij.ui.jcef.JBCefBrowserBuilder
 import com.intellij.ui.jcef.JBCefJSQuery
 import com.intellij.util.ui.UIUtil
 import org.cef.browser.CefBrowser
-import org.cef.browser.CefFrame
 import org.cef.callback.CefJSDialogCallback
 import org.cef.handler.CefJSDialogHandler
 import org.cef.handler.CefJSDialogHandlerAdapter
 import org.jetbrains.annotations.NotNull
 import javax.swing.JComponent
-import org.cef.handler.CefLoadHandlerAdapter
 import org.cef.misc.BoolRef
+import javax.swing.SwingUtilities
 import kotlin.math.log10
 import kotlin.math.pow
 
@@ -44,6 +47,12 @@ class SvgPreviewPanel(
             updatePreview(event.document.text)
         }
     }
+
+    private val jsSyncQuery = JBCefJSQuery.create(browser as JBCefBrowserBase)
+
+    private val jsInfoQuery = JBCefJSQuery.create(browser as JBCefBrowserBase)
+
+    private val jsSettingQuery = JBCefJSQuery.create(browser as JBCefBrowserBase)
 
     fun loadHtmlWithInlineResources(browser: JBCefBrowser) {
         // 读取 HTML
@@ -93,8 +102,38 @@ class SvgPreviewPanel(
         }
     }
 
-    private val jsSyncQuery = JBCefJSQuery.create(browser as JBCefBrowserBase)
-    private val jsInfoQuery = JBCefJSQuery.create(browser as JBCefBrowserBase)
+    fun decodeFromString(jsonString: String): List<SvgOption> {
+        val gson = Gson()
+        val type = object : TypeToken<List<SvgOption>>() {}.type
+        return gson.fromJson(jsonString, type)
+    }
+
+    fun stringify(json: List<SvgOption>): String {
+        val gson = Gson()
+        return gson.toJson(json)
+    }
+
+    fun handleSettingClick(jsonString:String): JBCefJSQuery.Response {
+        SwingUtilities.invokeLater {
+            // 假设 jsonString 是你的 JSON 字符串
+            val options: List<SvgOption> = decodeFromString(jsonString);
+            val dialog = SvgSettingsDialog(options)
+            dialog.show();
+            if (dialog.showAndGet()) {  // showAndGet() 返回 true 表示用户点击 OK
+                val result = dialog.selectedOptions;
+                val jsonStr = stringify(result);
+                // 方式：最常用（成功回调打印结果，失败回调打印错误）
+                val js = """
+                    window.syncOptions(`$jsonStr`);
+        """.trimIndent()
+                browser.cefBrowser.executeJavaScript(js,browser.cefBrowser.url, 0)
+                //println("用户选择: $jsonStr")
+            } else {
+                //println("用户取消了设置")
+            }
+        }
+        return JBCefJSQuery.Response("")
+    }
 
     private fun syncWebTheme() {
         ApplicationManager.getApplication().invokeLater {
@@ -117,22 +156,25 @@ class SvgPreviewPanel(
             document.documentElement.style.setProperty('--active-text-color', 'rgb(${a.red}, ${a.green}, ${a.blue})');
                      
             window.JBCefSyncSvg = function(param,resolve,reject) {
-                ${
-                jsSyncQuery.inject(
+                ${jsSyncQuery.inject(
                     "param",
                     "function(response) {resolve(response);}",
                     "function(code, msg) {reject(msg);}"
-                )
-            }
+                )}
             };
              window.JBCefSvgInfo = function(resolve,reject) {
-                ${
-                jsInfoQuery.inject(
+                ${jsInfoQuery.inject(
                     "''",
                     "function(response) {resolve(response);}",
                     "function(code, msg) {reject(msg);}"
-                )
-            }
+                )}
+            };
+             window.JBCefSetting = function(param,resolve,reject) {
+                ${jsSettingQuery.inject(
+                    "param",
+                    "function(response) {resolve(response);}",
+                    "function(code, msg) {reject(msg);}"
+                )}
             };
         """.trimIndent()
             browser.cefBrowser.executeJavaScript(js, browser.cefBrowser.url, 0)
@@ -170,7 +212,7 @@ class SvgPreviewPanel(
             },
             browser.cefBrowser
         )
-        browser.jbCefClient.addDisplayHandler( DisplayHandler(browser.component), browser.cefBrowser)
+        browser.jbCefClient.addDisplayHandler(DisplayHandler(browser.component), browser.cefBrowser)
     }
 
     fun initJSBridge() {
@@ -210,13 +252,13 @@ class SvgPreviewPanel(
         jsInfoQuery.addHandler { input ->
             return@addHandler getSizeInfo()
         }
+
+        jsSettingQuery.addHandler { input ->
+            return@addHandler handleSettingClick(input)
+        }
+
         addJSHandler();
-// 在页面加载完成后注入桥接函数（推荐方式）
-        browser.jbCefClient.addLoadHandler(object : CefLoadHandlerAdapter() {
-            override fun onLoadEnd(browser: CefBrowser?, frame: CefFrame?, httpStatusCode: Int) {
-                syncWebTheme()  // 主题切换时立即同步
-            }
-        }, browser.cefBrowser)
+        syncWebTheme()  // 主题切换时立即同步
     }
 
 

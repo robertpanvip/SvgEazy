@@ -57,6 +57,10 @@ body {
     margin: 0 4px;
 }
 
+.svgo-btn>svg{
+   pointer-events: none;
+}
+
 .svgo-btn.active {
     transition: .3s;
     color: var(--active-text-color);
