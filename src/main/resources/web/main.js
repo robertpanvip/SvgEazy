@@ -313,43 +313,14 @@ function bootstrap() {
 
 function initSettingPanel() {
     const setting = $('.svgo-setting');      // 设置按钮
-    const settingPanel = $('.svgo-list'); // 假设按钮和面板是同一个元素，或改成面板容器
-    // 如果面板是独立的子元素，请改成 const settingPanel = $('.svgo-panel') 或类似
-    const toggleSetting = (e) => {
-        e.stopPropagation(); // 阻止事件冒泡到 window
-        setting.classList.toggle('active');
-    };
 
-    const closePanelIfClickOutside = (e) => {
-        if (!settingPanel.contains(e.target)) {
-            setting.classList.remove('active');
-            // 可选：移除自身监听器，避免常驻（性能更好）
-            window.removeEventListener('click', closePanelIfClickOutside);
-            document.removeEventListener('keydown', keydown);
-        } else {
-            window.addEventListener('click', closePanelIfClickOutside, {once: true});
-        }
-    };
-
-    // 点击设置按钮：切换面板显示
-    //setting.addEventListener('click', togglePanel);
-
-    const settingClick = (e) => {
+    const settingClick = () => {
         const _options = options.map((op) => ({...op, checked: op.checked === undefined ? true : op.checked}))
         openSetting(JSON.stringify(_options)).then(res => {
             console.log(res)
         }, (err) => {
             console.log(err)
         });
-
-        /*toggleSetting(e);
-        // 如果面板现在是打开状态，才添加外部点击关闭监听
-        if (setting.classList.contains('active')) {
-            // 使用 setTimeout 0 或 nextTick 确保点击按钮本身的事件已冒泡完毕
-            setTimeout(() => {
-                window.addEventListener('click', closePanelIfClickOutside, {once: true});
-            }, 0);
-        }*/
     }
 
     setting.addEventListener('click', settingClick);
@@ -506,7 +477,6 @@ function initPan(svg, center) {
         const p = getSvgPoint(e)
         const dx = p.x - startMouse.x
         const dy = p.y - startMouse.y
-
         activeEl.setAttribute(
             'transform',
             `translate(${startTranslate.x + dx}, ${startTranslate.y + dy})`

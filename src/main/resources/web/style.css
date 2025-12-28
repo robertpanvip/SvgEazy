@@ -137,6 +137,9 @@ body {
     height: 100%;
     position: relative;
 }
+.viewer > * {
+    will-change: transform;
+}
 
 .chess{
     --size: 8px;
