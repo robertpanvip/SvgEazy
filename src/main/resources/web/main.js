@@ -249,7 +249,7 @@ function bootstrap() {
     const center = $('.svgo-middle');
     const sizeInfo = $('.size-info');
     const svgoStart = $('.svgo-start');
-    const svg = $('.viewer>svg');
+    let svg = $('.viewer>svg');
 
     getSvgInfo().then(res => {
         let size = ''
@@ -302,6 +302,8 @@ function bootstrap() {
             const data = optimizeSvg(viewer.innerHTML, options)
             syncSvg(data);
             this.title = 'Optimize'
+            svg = $('.viewer>svg');
+            updateSvgContent(data);
         } else {
             this.title = 'Optimize'
         }
@@ -326,7 +328,7 @@ function bootstrap() {
 
     zoom(svg, viewer)
 
-    initPan(svg, center)
+    initPan(center)
 
     cleanup.push(() => {
         chess.removeEventListener('click', handleChessClick)
@@ -456,7 +458,8 @@ function zoom(svg, viewer) {
     });
 }
 
-function initPan(svg, center) {
+function initPan(center) {
+    const svg = $('.viewer>svg');
     let activeEl = null
     let dragging = false
 
@@ -510,6 +513,7 @@ function initPan(svg, center) {
     const mouseup = () => {
         dragging = false
         activeEl = null;
+        const svg = $('.viewer>svg');
         syncSvg(svg.parentNode.innerHTML)
     }
 
@@ -524,11 +528,11 @@ function initPan(svg, center) {
 }
 
 function ensureRootGroup(svg) {
-    let root = svg.querySelector(':scope > g[data-root]')
+    let root = svg.querySelector(':scope > .data-root')
     if (root) return root
 
     root = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    root.setAttribute("data-root", '')
+    root.setAttribute("class", 'data-root')
 
     while (svg.firstChild) {
         root.appendChild(svg.firstChild)
