@@ -473,7 +473,6 @@ function initPan(center) {
         pt.y = e.clientY
         return pt.matrixTransform(svg.getScreenCTM().inverse())
     }
-
     // mousedown：记录起始状态
     svg.addEventListener('mousedown', e => {
         // 只拖 svg 内的元素（排除 svg 本身）

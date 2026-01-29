@@ -59,7 +59,6 @@ class DisplayHandler(
         return true
     }
 
-
     override fun onConsoleMessage(
         browser: CefBrowser?,
         level: CefSettings.LogSeverity?,
