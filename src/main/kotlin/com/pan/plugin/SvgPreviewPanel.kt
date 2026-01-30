@@ -24,6 +24,8 @@ import com.intellij.ui.jcef.JBCefBrowserBase
 import com.intellij.ui.jcef.JBCefBrowserBuilder
 import com.intellij.ui.jcef.JBCefJSQuery
 import com.intellij.util.ui.UIUtil
+import com.intellij.util.ui.update.MergingUpdateQueue
+import com.intellij.util.ui.update.Update
 import org.cef.browser.CefBrowser
 import org.cef.callback.CefJSDialogCallback
 import org.cef.handler.CefJSDialogHandler
@@ -39,15 +41,30 @@ class SvgPreviewPanel(
     private val project: Project,
     private val file: VirtualFile
 ) : UserDataHolderBase(), FileEditor, Disposable {
-
-    private val browser = JBCefBrowserBuilder().build()
+    private val browser = JBCefBrowserBuilder().setOffScreenRendering(false).build()
 
     private val documentListener = object : DocumentListener {
         override fun documentChanged(event: DocumentEvent) {
-            updatePreview(event.document.text)
+            updatePreviewMerged(event.document.text)
         }
     }
+    private val updateQueue = MergingUpdateQueue(
+        "SvgPreviewUpdate",
+        80,
+        true,
+        null,
+        this,
+        null,
+        false
+    )
 
+    private fun updatePreviewMerged(svg: String) {
+        updateQueue.queue(object : Update("svg") {
+            override fun run() {
+                updatePreview(svg)
+            }
+        })
+    }
     private val jsSyncQuery = JBCefJSQuery.create(browser as JBCefBrowserBase)
 
     private val jsInfoQuery = JBCefJSQuery.create(browser as JBCefBrowserBase)
@@ -232,7 +249,7 @@ class SvgPreviewPanel(
                     {
                         ApplicationManager.getApplication().runWriteAction {
                             // 记录旧内容，用于可能的 undo
-                            val oldText = document.text
+                            //val oldText = document.text
 
                             // 替换整个内容（这一步本身不可 undo，但包裹在 command 中后就可）
                             document.setText(input)
@@ -263,6 +280,12 @@ class SvgPreviewPanel(
 
 
     init {
+        browser.cefBrowser.zoomLevel = 0.0   // 初始化缩放为默认 1:1
+        browser.component.addMouseWheelListener { e ->
+            if (e.isControlDown) {
+                e.consume() // 阻止 JCEF 自带的 Ctrl+滚轮缩放
+            }
+        }
         val document = getDocument() ?: error("No document for file $file")
 
         browser.setProperty(JBCefBrowserBase.Properties.NO_CONTEXT_MENU, true)
@@ -306,12 +329,6 @@ class SvgPreviewPanel(
             .replace("\n", "\\n")
         ApplicationManager.getApplication().invokeLater {
             if (browser.isDisposed) return@invokeLater
-            browser.cefBrowser.zoomLevel = 0.0   // 初始化缩放为默认 1:1
-            browser.component.addMouseWheelListener { e ->
-                if (e.isControlDown) {
-                    e.consume() // 阻止 JCEF 自带的 Ctrl+滚轮缩放
-                }
-            }
             browser.cefBrowser.executeJavaScript(
                 """
                 window.pendingSvg = `$escaped`;
