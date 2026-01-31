@@ -35,7 +35,7 @@ intellijPlatform {
             sinceBuild = "251"
         }
         changeNotes = """
-      # Changelog
+Changelog
 [1.0.3]
  Changed
 - ⚡️ 添加全局SVGO 配置
