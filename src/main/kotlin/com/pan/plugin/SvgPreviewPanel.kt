@@ -34,6 +34,8 @@ import org.jetbrains.annotations.NotNull
 import javax.swing.JComponent
 import org.cef.misc.BoolRef
 import javax.swing.SwingUtilities
+import kotlin.collections.component1
+import kotlin.collections.component2
 import kotlin.math.log10
 import kotlin.math.pow
 
@@ -50,7 +52,7 @@ class SvgPreviewPanel(
     }
     private val updateQueue = MergingUpdateQueue(
         "SvgPreviewUpdate",
-        80,
+        110,
         true,
         null,
         this,
@@ -130,14 +132,26 @@ class SvgPreviewPanel(
         return gson.toJson(json)
     }
 
-    fun handleSettingClick(jsonString:String): JBCefJSQuery.Response {
+    fun handleSettingClick(): JBCefJSQuery.Response {
         SwingUtilities.invokeLater {
-            // 假设 jsonString 是你的 JSON 字符串
-            val options: List<SvgOption> = decodeFromString(jsonString);
+            val optimizeOptions = GlobalConfigService.getInstance()
+                .state
+                .optimizeOptions
+            val options = optimizeOptions.map { (key, checked) ->
+                SvgOption(key, key, checked)
+            }
             val dialog = SvgSettingsDialog(options)
             dialog.show();
             if (dialog.showAndGet()) {  // showAndGet() 返回 true 表示用户点击 OK
                 val result = dialog.selectedOptions;
+                val target = GlobalConfigService.getInstance()
+                    .state
+                    .optimizeOptions
+
+                target.clear()
+                result.forEach {
+                    target[it.key] = it.checked
+                }
                 val jsonStr = stringify(result);
                 // 方式：最常用（成功回调打印结果，失败回调打印错误）
                 val js = """
@@ -164,6 +178,12 @@ class SvgPreviewPanel(
                 // 兜底：如果主题没定义 pressed，就用普通前景色
                 JBColor.namedColor("Button.foreground", JBColor.WHITE)
             );
+            val optimizeOptions = GlobalConfigService.getInstance()
+                .state
+                .optimizeOptions
+            val list = optimizeOptions.map { (key, checked) ->
+                SvgOption(key, key, checked)
+            }
             // 方式：最常用（成功回调打印结果，失败回调打印错误）
             val js = """
                     // 设置 CSS 变量
@@ -193,6 +213,8 @@ class SvgPreviewPanel(
                     "function(code, msg) {reject(msg);}"
                 )}
             };
+             window.svgoOptions = JSON.parse(`${stringify(list)}`);
+             //console.log(JSON.stringify(window.options));
         """.trimIndent()
             browser.cefBrowser.executeJavaScript(js, browser.cefBrowser.url, 0)
         }
@@ -260,7 +282,7 @@ class SvgPreviewPanel(
                         }
                     },
                     "Optimize and Save SVG",  // 显示在 Undo 菜单中的命令名
-                    "SvgEazyPlugin"        // 分组名，可自定义，用于批量 undo
+                    "SvgEasyPlugin"        // 分组名，可自定义，用于批量 undo
                 )
             }
             JBCefJSQuery.Response("保存成功")
@@ -271,7 +293,7 @@ class SvgPreviewPanel(
         }
 
         jsSettingQuery.addHandler { input ->
-            return@addHandler handleSettingClick(input)
+            return@addHandler handleSettingClick()
         }
 
         addJSHandler();
@@ -286,6 +308,9 @@ class SvgPreviewPanel(
                 e.consume() // 阻止 JCEF 自带的 Ctrl+滚轮缩放
             }
         }
+        GlobalConfigService.getInstance()
+            .restore()
+
         val document = getDocument() ?: error("No document for file $file")
 
         browser.setProperty(JBCefBrowserBase.Properties.NO_CONTEXT_MENU, true)

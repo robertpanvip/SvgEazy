@@ -1,6 +1,7 @@
 const $ = document.querySelector.bind(document);
 let cleanup = [];
-let options = [
+let options = window.svgoOptions||[]
+/*let options = [
     {
         key: "cleanupAttrs",
         label: "Clean up attributes",
@@ -132,12 +133,12 @@ let options = [
     }, {
         key: "removeXMLProcInst",
         label: "Remove XML processing instructions"
-    }];
+    }];*/
 
 function updateSvgContent(svg) {
     const viewer = $('.viewer');
     viewer.innerHTML = svg;
-    const v = optimizeSvg(svg, options);
+    const v = optimizeSvg(svg);
     const template = document.createElement('template')
     template.innerHTML = v;
     if (template.innerHTML !== viewer.innerHTML) {
@@ -199,10 +200,10 @@ function openSetting(param) {
 function syncOptions(jsonStr) {
     options = JSON.parse(jsonStr);
     const viewer = $('.viewer');
-    optimizeSvg(viewer.innerHTML, options)
+    optimizeSvg(viewer.innerHTML)
 }
 
-function optimizeSvg(svgString, options) {
+function optimizeSvg(svgString) {
     const viewer = $('.viewer');
     const settingForm = $('.svgo-list');
     const f = new FormData(settingForm);
@@ -299,7 +300,7 @@ function bootstrap() {
     function handleSvgoStartClick() {
         this.classList.toggle('active');
         if (this.classList.contains('active')) {
-            const data = optimizeSvg(viewer.innerHTML, options)
+            const data = optimizeSvg(viewer.innerHTML)
             syncSvg(data);
             this.title = 'Optimize'
             svg = $('.viewer>svg');
@@ -342,8 +343,7 @@ function initSettingPanel() {
     const setting = $('.svgo-setting');      // 设置按钮
 
     const settingClick = () => {
-        const _options = options.map((op) => ({...op, checked: op.checked === undefined ? true : op.checked}))
-        openSetting(JSON.stringify(_options)).then(res => {
+       openSetting().then(res => {
             console.log(res)
         }, (err) => {
             console.log(err)
