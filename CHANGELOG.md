@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.3]
+### Changed
+- ⚡️ 添加全局SVGO 配置
+
 ## [1.0.2]
 ### Changed
 - ⚡️ 优化 SVG 渲染性能，减少拖影

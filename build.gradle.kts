@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.pan"
-version = "1.0.2"
+version = "1.0.3"
 
 repositories {
     // 国内镜像优先
@@ -34,10 +34,7 @@ intellijPlatform {
         ideaVersion {
             sinceBuild = "251"
         }
-
-        changeNotes = """
-      Initial version
-    """.trimIndent()
+        changeNotes.set(file("CHANGELOG.md").readText(Charsets.UTF_8))
     }
 }
 
