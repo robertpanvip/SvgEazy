@@ -2,7 +2,6 @@ package com.pan.plugin
 
 import SvgOption
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.Storage
@@ -84,8 +83,6 @@ class GlobalConfigService :
     }
 
     fun restore() {
-        val configPath = PathManager.getConfigPath() // 配置目录
-        println("IDEA 全局配置目录: $configPath")
         val saved = state.optimizeOptions
         val result = mutableMapOf<String, Boolean>()
 
