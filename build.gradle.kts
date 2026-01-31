@@ -34,7 +34,25 @@ intellijPlatform {
         ideaVersion {
             sinceBuild = "251"
         }
-        changeNotes.set(file("CHANGELOG.md").readText(Charsets.UTF_8))
+        changeNotes = """
+      # Changelog
+[1.0.3]
+ Changed
+- ⚡️ 添加全局SVGO 配置
+
+[1.0.2]
+ Changed
+- ⚡️ 优化 SVG 渲染性能，减少拖影
+
+Fixed
+🐛 修复大 SVG 文件卡顿问题
+- 
+[1.0.1]
+ 初始版本
+
+[1.0.0]
+ 初始版本
+    """.trimIndent()
     }
 }
 
