@@ -43,7 +43,9 @@ class SvgPreviewPanel(
     private val project: Project,
     private val file: VirtualFile
 ) : UserDataHolderBase(), FileEditor, Disposable {
-    private val browser = JBCefBrowserBuilder().setOffScreenRendering(false).build()
+    val isVM = System.getProperty("java.vm.name").contains("VM") ||
+            System.getProperty("os.name").lowercase().contains("virtual")
+    private val browser = JBCefBrowserBuilder().setOffScreenRendering(isVM).build()
 
     private val documentListener = object : DocumentListener {
         override fun documentChanged(event: DocumentEvent) {
