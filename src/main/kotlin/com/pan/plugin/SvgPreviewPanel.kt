@@ -69,6 +69,8 @@ class SvgPreviewPanel(
             }
         })
     }
+    private val jsReadyQuery = JBCefJSQuery.create(browser as JBCefBrowserBase)
+
     private val jsSyncQuery = JBCefJSQuery.create(browser as JBCefBrowserBase)
 
     private val jsInfoQuery = JBCefJSQuery.create(browser as JBCefBrowserBase)
@@ -215,11 +217,47 @@ class SvgPreviewPanel(
                     "function(code, msg) {reject(msg);}"
                 )}
             };
+               window.JBCefAppReady = function(param) {
+        ${jsReadyQuery.inject(
+                "param",
+                "function(response) {}",
+                "function(code, msg) {}"
+            )}
+    };
              window.svgoOptions = JSON.parse(`${stringify(list)}`);
              //console.log(JSON.stringify(window.options));
         """.trimIndent()
             browser.cefBrowser.executeJavaScript(js, browser.cefBrowser.url, 0)
         }
+    }
+
+    private fun sendInitDataToJs() {
+        val document = getDocument() ?: return
+        val svg = document.text
+
+        val options = GlobalConfigService.getInstance()
+            .state.optimizeOptions
+            .map { (k, v) -> SvgOption(k, k, v) }
+
+        val jsonOptions = stringify(options)
+            .replace("\\", "\\\\")
+            .replace("`", "\\`")
+            .replace("$", "\\$")
+
+        val escapedSvg = svg
+            .replace("\\", "\\\\")
+            .replace("`", "\\`")
+            .replace("$", "\\$")
+            .replace("\n", "\\n")
+
+        val js = """
+        window.__JCEF_ON_READY__({
+            options: JSON.parse(`$jsonOptions`),
+            svg: `$escapedSvg`
+        });
+    """.trimIndent()
+
+        browser.cefBrowser.executeJavaScript(js, browser.cefBrowser.url, 0)
     }
 
     fun addJSHandler() {
@@ -298,6 +336,12 @@ class SvgPreviewPanel(
             return@addHandler handleSettingClick()
         }
 
+        jsReadyQuery.addHandler { _ ->
+            ApplicationManager.getApplication().invokeLater {
+                sendInitDataToJs()
+            }
+            JBCefJSQuery.Response("ok")
+        }
         addJSHandler();
         syncWebTheme()  // 主题切换时立即同步
     }
